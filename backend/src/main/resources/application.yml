@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: vinted-monitor
+
+  datasource:
+    url: jdbc:h2:file:./data/vinted-monitor;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+    open-in-view: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+vinted:
+  base-url: https://www.vinted.hu
+  api-path: /api/v2/catalog/items
+  user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+  poll-interval-ms: 900000   # 15 minutes
+  per-watch-delay-ms: 2500   # jitter between requests in a single tick
+
+notifications:
+  recipient: ${NOTIFY_TO:}
+  from: ${MAIL_USERNAME:}
+
+logging:
+  level:
+    com.vintedmonitor: INFO
+    org.springframework.web: WARN

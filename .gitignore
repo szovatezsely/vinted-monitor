@@ -1,0 +1,22 @@
+# Backend (Gradle / IntelliJ)
+backend/.gradle/
+backend/build/
+backend/out/
+backend/.idea/
+backend/data/
+
+# Frontend (Node / Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Claude
+.claude/

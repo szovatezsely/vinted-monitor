@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    image: vinted-monitor-backend:latest
+    container_name: vinted-monitor-backend
+    environment:
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      NOTIFY_TO: ${NOTIFY_TO:-}
+      SPRING_PROFILES_ACTIVE: docker
+      TZ: Europe/Budapest
+    volumes:
+      - backend-data:/app/data
+    expose:
+      - "8080"
+    # Uncomment the next two lines if you want to hit the API directly from the host (e.g. for debugging)
+    # ports:
+    #   - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - vinted-monitor
+
+  frontend:
+    build:
+      context: ./frontend
+    image: vinted-monitor-frontend:latest
+    container_name: vinted-monitor-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+    networks:
+      - vinted-monitor
+
+volumes:
+  backend-data:
+
+networks:
+  vinted-monitor:
+    driver: bridge
