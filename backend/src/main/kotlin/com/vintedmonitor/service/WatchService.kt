@@ -1,5 +1,6 @@
 package com.vintedmonitor.service
 
+import com.vintedmonitor.config.FilterProperties
 import com.vintedmonitor.domain.MatchedListing
 import com.vintedmonitor.domain.SeenItem
 import com.vintedmonitor.domain.WatchedGame
@@ -18,7 +19,9 @@ import java.time.Instant
 class WatchService(
     private val watchRepo: WatchedGameRepository,
     private val seenRepo: SeenItemRepository,
-    private val matchRepo: MatchedListingRepository
+    private val matchRepo: MatchedListingRepository,
+    private val filterProps: FilterProperties,
+    private val sellerCurrencyFilter: SellerCurrencyFilter
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -69,7 +72,9 @@ class WatchService(
         val watchId = watch.id ?: return emptyList()
         if (items.isEmpty()) return emptyList()
 
-        val filtered = items.filter { passesPriceFilter(watch, it) }
+        val filtered = items
+            .filter { passesPriceFilter(watch, it) }
+            .filter { passesHungarianFilter(it) }
         if (filtered.isEmpty()) return emptyList()
 
         val incomingIds = filtered.map { it.id }
@@ -118,5 +123,18 @@ class WatchService(
         watch.minPrice?.let { if (price < it) return false }
         watch.maxPrice?.let { if (price > it) return false }
         return true
+    }
+
+    /**
+     * When [FilterProperties.hungarianOnly] is on, keep only Hungarian listings.
+     * A non-HUF seller currency means the seller is abroad, so the listing is dropped.
+     */
+    private fun passesHungarianFilter(item: VintedItem): Boolean {
+        if (!filterProps.hungarianOnly) return true
+
+        val sellerCurrency = item.sellerCurrency()
+        val foreign = sellerCurrencyFilter.isForeignSellerCurrency(sellerCurrency)
+        if (foreign) log.debug("Dropping listing {} — foreign seller currency '{}'", item.id, sellerCurrency)
+        return !foreign
     }
 }

@@ -95,6 +95,7 @@ class VintedClient(
                     return null
                 }
                 val body = resp.body?.string() ?: return null
+                if (props.logRawItems) logFirstItemSample(body)
                 objectMapper.readValue(body, VintedSearchResponse::class.java)
             }
         } catch (e: IOException) {
@@ -104,6 +105,18 @@ class VintedClient(
             log.warn("Failed to parse Vinted response for query='{}': {}", query, e.message)
             null
         }
+    }
+
+    /** Diagnostic: pretty-print the first item's raw JSON so we can see its fields. */
+    private fun logFirstItemSample(body: String) {
+        runCatching {
+            val first = objectMapper.readTree(body).path("items").get(0)
+            if (first != null) {
+                log.info("Vinted raw item sample (vinted.log-raw-items=true):\n{}", first.toPrettyString())
+            } else {
+                log.info("Vinted raw item sample requested, but the response had no items.")
+            }
+        }.onFailure { log.warn("Could not log raw item sample: {}", it.message) }
     }
 }
 

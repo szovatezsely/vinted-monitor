@@ -71,9 +71,11 @@ data class SettingsResponse(
     val recipient: String,
     val from: String,
     val mailConfigured: Boolean,
-    val pollIntervalMs: Long
+    val pollIntervalMs: Long,
+    val hungarianOnly: Boolean
 )
 
 data class SettingsUpdate(
-    val recipient: String?
+    val recipient: String? = null,
+    val hungarianOnly: Boolean? = null
 )

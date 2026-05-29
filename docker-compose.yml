@@ -8,6 +8,8 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       NOTIFY_TO: ${NOTIFY_TO:-}
+      FILTER_HUNGARIAN_ONLY: ${FILTER_HUNGARIAN_ONLY:-true}
+      VINTED_LOG_RAW_ITEMS: ${VINTED_LOG_RAW_ITEMS:-false}
       SPRING_PROFILES_ACTIVE: docker
       TZ: Europe/Budapest
     volumes:

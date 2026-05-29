@@ -69,7 +69,7 @@ onMounted(load)
 
 <template>
   <section>
-    <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
+    <div class="bg-white border border-slate-200 rounded-xl p-5 mb-6 shadow-sm">
       <h2 class="text-lg font-semibold mb-4">
         {{ editingId == null ? 'Add a watch' : 'Edit watch' }}
       </h2>
@@ -81,7 +81,7 @@ onMounted(load)
             v-model="form.name"
             type="text"
             placeholder="Catan"
-            class="mt-1 block w-full rounded border-slate-300 shadow-sm border px-3 py-2"
+            class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm border px-3 py-2 focus:outline-none focus:border-vinted focus:ring-2 focus:ring-vinted-200"
             required
           />
         </label>
@@ -91,7 +91,7 @@ onMounted(load)
             v-model="form.searchText"
             type="text"
             placeholder="Settlers of Catan"
-            class="mt-1 block w-full rounded border-slate-300 shadow-sm border px-3 py-2"
+            class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm border px-3 py-2 focus:outline-none focus:border-vinted focus:ring-2 focus:ring-vinted-200"
             required
           />
         </label>
@@ -101,7 +101,7 @@ onMounted(load)
             v-model.number="form.minPrice"
             type="number"
             min="0"
-            class="mt-1 block w-full rounded border-slate-300 shadow-sm border px-3 py-2"
+            class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm border px-3 py-2 focus:outline-none focus:border-vinted focus:ring-2 focus:ring-vinted-200"
           />
         </label>
         <label class="block">
@@ -110,25 +110,25 @@ onMounted(load)
             v-model.number="form.maxPrice"
             type="number"
             min="0"
-            class="mt-1 block w-full rounded border-slate-300 shadow-sm border px-3 py-2"
+            class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm border px-3 py-2 focus:outline-none focus:border-vinted focus:ring-2 focus:ring-vinted-200"
           />
         </label>
         <label class="flex items-center gap-2 md:col-span-2">
-          <input v-model="form.enabled" type="checkbox" class="rounded" />
+          <input v-model="form.enabled" type="checkbox" class="rounded accent-vinted" />
           <span class="text-sm text-slate-700">Enabled</span>
         </label>
 
         <div class="md:col-span-2 flex gap-2">
           <button
             type="submit"
-            class="px-4 py-2 rounded bg-slate-900 text-white text-sm font-medium hover:bg-slate-800"
+            class="px-5 py-2 rounded-full bg-vinted text-white text-sm font-semibold hover:bg-vinted-700 transition-colors"
           >
             {{ editingId == null ? 'Add watch' : 'Save changes' }}
           </button>
           <button
             v-if="editingId != null"
             type="button"
-            class="px-4 py-2 rounded border border-slate-300 text-sm"
+            class="px-5 py-2 rounded-full border border-slate-300 text-sm font-medium hover:bg-slate-50"
             @click="resetForm"
           >
             Cancel
@@ -139,9 +139,9 @@ onMounted(load)
 
     <div v-if="error" class="text-sm text-red-600 mb-3">{{ error }}</div>
 
-    <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 text-slate-600">
+        <thead class="bg-vinted-50 text-vinted-800">
           <tr>
             <th class="text-left px-4 py-2">Label</th>
             <th class="text-left px-4 py-2">Search</th>
@@ -176,7 +176,7 @@ onMounted(load)
               {{ w.lastPolledAt ? new Date(w.lastPolledAt).toLocaleString() : 'never' }}
             </td>
             <td class="px-4 py-2 text-right">
-              <button class="text-xs text-slate-600 hover:underline mr-2" @click="edit(w)">
+              <button class="text-xs font-medium text-vinted hover:underline mr-2" @click="edit(w)">
                 Edit
               </button>
               <button class="text-xs text-red-600 hover:underline" @click="remove(w.id)">

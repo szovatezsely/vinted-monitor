@@ -19,7 +19,21 @@ data class VintedItem(
     val price: VintedPrice?,
     val url: String?,
     val photo: VintedPhoto?,
-    @JsonProperty("brand_title") val brandTitle: String? = null
+    @JsonProperty("brand_title") val brandTitle: String? = null,
+    // Currency-conversion block. Vinted includes it only when the seller's currency
+    // differs from the buyer's (always HUF on vinted.hu) — i.e. a cross-border
+    // listing. It's the most reliable "which country is the seller in" signal the
+    // catalog response gives us; there is no city/country field here.
+    val conversion: VintedConversion? = null
+) {
+    /** Seller's currency if Vinted included a conversion block, else null. */
+    fun sellerCurrency(): String? = conversion?.sellerCurrency?.takeIf { it.isNotBlank() }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class VintedConversion(
+    @JsonProperty("seller_currency") val sellerCurrency: String? = null,
+    @JsonProperty("buyer_currency") val buyerCurrency: String? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
