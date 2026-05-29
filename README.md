@@ -1,6 +1,6 @@
 # Vinted Monitor
 
-Local Kotlin + Vue app that polls **Vinted.hu** every 15 minutes for new listings
+Local Kotlin + Vue app that polls **Vinted.hu** every 5 minutes for new listings
 matching a configurable watch list (e.g. board games like *Settlers of Catan*) and
 emails a digest when fresh matches appear.
 
@@ -102,7 +102,7 @@ backend, so CORS is not an issue in development.
 
 ## How it works
 
-1. The backend's `PollingScheduler` fires every 15 minutes (`vinted.poll-interval-ms`).
+1. The backend's `PollingScheduler` fires every 5 minutes (`vinted.poll-interval-ms`).
 2. For each enabled watch, `VintedClient` calls
    `GET https://www.vinted.hu/api/v2/catalog/items?search_text=...&order=newest_first`.
    - Cookies/session are bootstrapped by GETting the homepage first.
@@ -120,7 +120,7 @@ Edit `backend/src/main/resources/application.yml`:
 
 ```yaml
 vinted:
-  poll-interval-ms: 900000   # 15 min — drop or raise as you like
+  poll-interval-ms: 300000   # 5 min — drop or raise as you like
 ```
 
 Keep it sensible — Vinted's anti-abuse will rate-limit aggressive polling.
@@ -143,7 +143,7 @@ Keep it sensible — Vinted's anti-abuse will rate-limit aggressive polling.
 - Vinted's `/api/v2/catalog/items` endpoint is **unofficial**. If they change
   the schema or tighten anti-bot measures, you'll see warnings in the backend
   log and may need to adjust `VintedClient` (e.g. add an `X-CSRF-Token` header).
-- 15-minute polling per watch with 2.5 s spacing between watches is well within
+- 5-minute polling per watch with 2.5 s spacing between watches is well within
   polite limits for personal use. Don't crank it down to seconds.
 - Email digests are sent **per polling tick**, not per match — so if 3 listings
   appear in one tick, you get one email summarizing all three.
