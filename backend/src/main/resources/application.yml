@@ -36,7 +36,7 @@ vinted:
   base-url: https://www.vinted.hu
   api-path: /api/v2/catalog/items
   user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-  poll-interval-ms: 900000   # 15 minutes
+  poll-interval-ms: 300000   # 5 minutes
   per-watch-delay-ms: 2500   # jitter between requests in a single tick
 
 notifications:
