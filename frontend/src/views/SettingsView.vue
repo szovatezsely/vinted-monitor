@@ -65,14 +65,14 @@ onMounted(load)
 
     <div v-if="loading" class="text-slate-500 text-sm">Loading…</div>
 
-    <div v-else-if="settings" class="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+    <div v-else-if="settings" class="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-sm">
       <div>
         <label class="block text-sm font-medium text-slate-700">Notification recipient</label>
         <input
           v-model="recipient"
           type="email"
           placeholder="you@example.com"
-          class="mt-1 block w-full rounded border-slate-300 shadow-sm border px-3 py-2"
+          class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm border px-3 py-2 focus:outline-none focus:border-vinted focus:ring-2 focus:ring-vinted-200"
         />
         <p class="text-xs text-slate-500 mt-1">
           Email address that receives the digest when new matches are found.
@@ -81,7 +81,7 @@ onMounted(load)
 
       <div>
         <label class="flex items-center gap-2 text-sm font-medium text-slate-700">
-          <input v-model="hungarianOnly" type="checkbox" class="rounded border-slate-300" />
+          <input v-model="hungarianOnly" type="checkbox" class="rounded border-slate-300 accent-vinted" />
           Hungarian listings only
         </label>
         <p class="text-xs text-slate-500 mt-1">
@@ -103,14 +103,14 @@ onMounted(load)
 
       <div class="flex gap-2 pt-2">
         <button
-          class="px-4 py-2 rounded bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
+          class="px-5 py-2 rounded-full bg-vinted text-white text-sm font-semibold hover:bg-vinted-700 disabled:opacity-50 transition-colors"
           :disabled="saving"
           @click="save"
         >
           {{ saving ? 'Saving…' : 'Save' }}
         </button>
         <button
-          class="px-4 py-2 rounded border border-slate-300 text-sm hover:bg-slate-50 disabled:opacity-50"
+          class="px-5 py-2 rounded-full border border-vinted text-vinted text-sm font-medium hover:bg-vinted-50 disabled:opacity-50 transition-colors"
           :disabled="polling"
           @click="pollNow"
         >
