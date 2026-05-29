@@ -5,8 +5,8 @@ matching a configurable watch list (e.g. board games like *Settlers of Catan*) a
 emails a digest when fresh matches appear.
 
 ```
-adroit/testing/
-├── backend/             Spring Boot 3 + Kotlin + H2 + Quartz + JavaMail
+adroit/vinted-monitor/
+├── backend/             Spring Boot 3 + Kotlin + H2 + Spring Scheduling + JavaMail
 ├── frontend/            Vue 3 + Vite + Pinia + Tailwind
 ├── docker-compose.yml   One-command stack (backend + nginx-served frontend)
 └── .env.example         Copy to .env and fill in your Gmail credentials
@@ -108,8 +108,10 @@ backend, so CORS is not an issue in development.
    - Cookies/session are bootstrapped by GETting the homepage first.
    - Cookies are kept in memory via a custom `CookieJar`; on 401/403 the jar is
      cleared and the request retried once.
-3. `WatchService.recordNewMatches` deduplicates against the `seen_items` table
-   so we never email about the same listing twice, then writes the new ones to
+3. `WatchService.recordNewMatches` applies the price filter and (when
+   **Hungarian listings only** is enabled) drops titles containing Greek or
+   Polish-only letters, deduplicates against the `seen_items` table so we never
+   email about the same listing twice, then writes the new ones to
    `matched_listings`.
 4. After all watches are polled, `EmailService.sendDigest` sends a single email
    summarizing the new matches per watch.
@@ -125,6 +127,21 @@ vinted:
 
 Keep it sensible — Vinted's anti-abuse will rate-limit aggressive polling.
 
+## Hungarian-only filter
+
+Vinted.hu also surfaces Greek and Polish listings. With **Hungarian listings
+only** enabled (the default), any listing whose title contains a letter unique
+to Greek (the Greek Unicode blocks) or Polish (`ą ć ę ł ń ś ź ż`) is dropped
+before it is recorded or emailed. The shared letter `ó` is intentionally *not*
+treated as Polish, since Hungarian uses it too.
+
+Toggle it from the **Settings** page, or set the startup default with the
+`FILTER_HUNGARIAN_ONLY` env var (`true`/`false`). Like the recipient setting,
+a runtime toggle is held in memory and resets to the env/default on restart.
+
+This is a heuristic: a Polish listing written without any Polish-only letters
+won't be caught. It reliably filters the common case.
+
 ## API endpoints (for reference)
 
 | Method | Path                       | Purpose                          |
@@ -134,8 +151,8 @@ Keep it sensible — Vinted's anti-abuse will rate-limit aggressive polling.
 | PUT    | `/api/watches/{id}`        | Update a watch                   |
 | DELETE | `/api/watches/{id}`        | Delete a watch                   |
 | GET    | `/api/feed?limit=50`       | Recent matched listings          |
-| GET    | `/api/settings`            | Current notification settings    |
-| PUT    | `/api/settings`            | Update recipient                 |
+| GET    | `/api/settings`            | Current settings (recipient, filter, poll interval) |
+| PUT    | `/api/settings`            | Update recipient and/or the Hungarian-only filter   |
 | POST   | `/api/settings/poll-now`   | Trigger a poll immediately       |
 
 ## Caveats

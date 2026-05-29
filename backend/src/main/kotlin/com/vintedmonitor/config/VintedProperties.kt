@@ -19,3 +19,14 @@ class NotificationProperties {
     var recipient: String = ""
     var from: String = ""
 }
+
+@Configuration
+@ConfigurationProperties(prefix = "filter")
+class FilterProperties {
+    /**
+     * When true (default), listings whose title contains letters unique to
+     * Greek or Polish are dropped, so only Hungarian-friendly results remain.
+     * Toggle from the Settings page or via the FILTER_HUNGARIAN_ONLY env var.
+     */
+    var hungarianOnly: Boolean = true
+}

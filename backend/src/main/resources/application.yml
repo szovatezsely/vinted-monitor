@@ -43,6 +43,11 @@ notifications:
   recipient: ${NOTIFY_TO:}
   from: ${MAIL_USERNAME:}
 
+filter:
+  # When true, only Hungarian-friendly listings are kept (Greek/Polish dropped).
+  # Default startup value; can be toggled at runtime from the Settings page.
+  hungarian-only: ${FILTER_HUNGARIAN_ONLY:true}
+
 logging:
   level:
     com.vintedmonitor: INFO

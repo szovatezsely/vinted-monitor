@@ -1,5 +1,6 @@
 package com.vintedmonitor.service
 
+import com.vintedmonitor.config.FilterProperties
 import com.vintedmonitor.domain.MatchedListing
 import com.vintedmonitor.domain.SeenItem
 import com.vintedmonitor.domain.WatchedGame
@@ -18,7 +19,9 @@ import java.time.Instant
 class WatchService(
     private val watchRepo: WatchedGameRepository,
     private val seenRepo: SeenItemRepository,
-    private val matchRepo: MatchedListingRepository
+    private val matchRepo: MatchedListingRepository,
+    private val filterProps: FilterProperties,
+    private val languageFilter: LanguageFilter
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -69,7 +72,9 @@ class WatchService(
         val watchId = watch.id ?: return emptyList()
         if (items.isEmpty()) return emptyList()
 
-        val filtered = items.filter { passesPriceFilter(watch, it) }
+        val filtered = items
+            .filter { passesPriceFilter(watch, it) }
+            .filter { passesLanguageFilter(it) }
         if (filtered.isEmpty()) return emptyList()
 
         val incomingIds = filtered.map { it.id }
@@ -118,5 +123,16 @@ class WatchService(
         watch.minPrice?.let { if (price < it) return false }
         watch.maxPrice?.let { if (price > it) return false }
         return true
+    }
+
+    /**
+     * When [FilterProperties.hungarianOnly] is on, drop listings whose title
+     * carries Greek or Polish-unique letters (i.e. clearly non-Hungarian).
+     */
+    private fun passesLanguageFilter(item: VintedItem): Boolean {
+        if (!filterProps.hungarianOnly) return true
+        val foreign = languageFilter.containsForeignLetters(item.title)
+        if (foreign) log.debug("Dropping non-Hungarian listing {}: '{}'", item.id, item.title)
+        return !foreign
     }
 }

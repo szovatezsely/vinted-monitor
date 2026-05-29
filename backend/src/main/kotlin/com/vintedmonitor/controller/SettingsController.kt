@@ -1,5 +1,6 @@
 package com.vintedmonitor.controller
 
+import com.vintedmonitor.config.FilterProperties
 import com.vintedmonitor.config.NotificationProperties
 import com.vintedmonitor.config.VintedProperties
 import com.vintedmonitor.dto.SettingsResponse
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class SettingsController(
     private val notificationProps: NotificationProperties,
     private val vintedProps: VintedProperties,
+    private val filterProps: FilterProperties,
     private val emailService: EmailService,
     private val pollingScheduler: PollingScheduler,
     @Value("\${spring.mail.username:}") private val mailUsername: String
@@ -29,12 +31,14 @@ class SettingsController(
         recipient = notificationProps.recipient,
         from = notificationProps.from.ifBlank { mailUsername },
         mailConfigured = emailService.isConfigured(),
-        pollIntervalMs = vintedProps.pollIntervalMs
+        pollIntervalMs = vintedProps.pollIntervalMs,
+        hungarianOnly = filterProps.hungarianOnly
     )
 
     @PutMapping
     fun update(@RequestBody update: SettingsUpdate): SettingsResponse {
         update.recipient?.let { notificationProps.recipient = it.trim() }
+        update.hungarianOnly?.let { filterProps.hungarianOnly = it }
         return get()
     }
 

@@ -4,6 +4,7 @@ import { settingsApi, type Settings } from '../api/client'
 
 const settings = ref<Settings | null>(null)
 const recipient = ref('')
+const hungarianOnly = ref(true)
 const loading = ref(false)
 const saving = ref(false)
 const polling = ref(false)
@@ -16,6 +17,7 @@ async function load() {
     const s = await settingsApi.get()
     settings.value = s
     recipient.value = s.recipient
+    hungarianOnly.value = s.hungarianOnly
   } catch (e: any) {
     error.value = e?.message ?? 'Failed to load settings'
   } finally {
@@ -28,7 +30,10 @@ async function save() {
   error.value = null
   message.value = null
   try {
-    settings.value = await settingsApi.update(recipient.value.trim())
+    settings.value = await settingsApi.update({
+      recipient: recipient.value.trim(),
+      hungarianOnly: hungarianOnly.value
+    })
     message.value = 'Saved.'
   } catch (e: any) {
     error.value = e?.message ?? 'Save failed'
@@ -71,6 +76,17 @@ onMounted(load)
         />
         <p class="text-xs text-slate-500 mt-1">
           Email address that receives the digest when new matches are found.
+        </p>
+      </div>
+
+      <div>
+        <label class="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <input v-model="hungarianOnly" type="checkbox" class="rounded border-slate-300" />
+          Hungarian listings only
+        </label>
+        <p class="text-xs text-slate-500 mt-1">
+          When on, listings whose title contains Greek or Polish-only letters are
+          skipped. Turn off to receive matches in any language.
         </p>
       </div>
 

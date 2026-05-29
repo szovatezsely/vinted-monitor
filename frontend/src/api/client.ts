@@ -43,6 +43,12 @@ export interface Settings {
   from: string
   mailConfigured: boolean
   pollIntervalMs: number
+  hungarianOnly: boolean
+}
+
+export interface SettingsUpdate {
+  recipient?: string
+  hungarianOnly?: boolean
 }
 
 export const watchesApi = {
@@ -60,7 +66,7 @@ export const feedApi = {
 
 export const settingsApi = {
   get: () => api.get<Settings>('/settings').then(r => r.data),
-  update: (recipient: string) =>
-    api.put<Settings>('/settings', { recipient }).then(r => r.data),
+  update: (update: SettingsUpdate) =>
+    api.put<Settings>('/settings', update).then(r => r.data),
   pollNow: () => api.post('/settings/poll-now').then(() => undefined)
 }
