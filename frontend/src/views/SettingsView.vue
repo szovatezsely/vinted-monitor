@@ -85,8 +85,8 @@ onMounted(load)
           Hungarian listings only
         </label>
         <p class="text-xs text-slate-500 mt-1">
-          When on, listings whose title contains Greek or Polish-only letters are
-          skipped. Turn off to receive matches in any language.
+          When on, listings from sellers outside Hungary (non-HUF currency) are
+          skipped. Turn off to receive matches from any country.
         </p>
       </div>
 

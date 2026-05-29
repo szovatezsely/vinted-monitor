@@ -38,13 +38,16 @@ vinted:
   user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
   poll-interval-ms: 300000   # 5 minutes
   per-watch-delay-ms: 2500   # jitter between requests in a single tick
+  # Diagnostic only: log the raw JSON of the first item per search so you can see
+  # which location fields Vinted returns. Leave false in normal operation.
+  log-raw-items: ${VINTED_LOG_RAW_ITEMS:false}
 
 notifications:
   recipient: ${NOTIFY_TO:}
   from: ${MAIL_USERNAME:}
 
 filter:
-  # When true, only Hungarian-friendly listings are kept (Greek/Polish dropped).
+  # When true, only Hungarian listings are kept (non-HUF sellers are dropped).
   # Default startup value; can be toggled at runtime from the Settings page.
   hungarian-only: ${FILTER_HUNGARIAN_ONLY:true}
 

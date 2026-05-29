@@ -109,10 +109,9 @@ backend, so CORS is not an issue in development.
    - Cookies are kept in memory via a custom `CookieJar`; on 401/403 the jar is
      cleared and the request retried once.
 3. `WatchService.recordNewMatches` applies the price filter and (when
-   **Hungarian listings only** is enabled) drops titles containing Greek or
-   Polish-only letters, deduplicates against the `seen_items` table so we never
-   email about the same listing twice, then writes the new ones to
-   `matched_listings`.
+   **Hungarian listings only** is enabled) drops listings from non-HUF sellers,
+   deduplicates against the `seen_items` table so we never email about the same
+   listing twice, then writes the new ones to `matched_listings`.
 4. After all watches are polled, `EmailService.sendDigest` sends a single email
    summarizing the new matches per watch.
 
@@ -129,18 +128,26 @@ Keep it sensible — Vinted's anti-abuse will rate-limit aggressive polling.
 
 ## Hungarian-only filter
 
-Vinted.hu also surfaces Greek and Polish listings. With **Hungarian listings
-only** enabled (the default), any listing whose title contains a letter unique
-to Greek (the Greek Unicode blocks) or Polish (`ą ć ę ł ń ś ź ż`) is dropped
-before it is recorded or emailed. The shared letter `ó` is intentionally *not*
-treated as Polish, since Hungarian uses it too.
+Vinted.hu also surfaces Greek, Polish, Romanian, etc. listings. With **Hungarian
+listings only** enabled (the default), each listing is filtered by the **seller's
+currency**: vinted.hu prices everything in HUF and attaches a `conversion` block
+carrying the seller's own currency whenever it differs. So a non-HUF seller currency
+(`PLN` = Poland, `RON` = Romania, `EUR` = eurozone such as Greece, …) means the
+seller is abroad and the listing is dropped. A HUF seller (no conversion block) is
+treated as domestic. This catches foreign listings even when the title looks
+language-neutral.
 
 Toggle it from the **Settings** page, or set the startup default with the
 `FILTER_HUNGARIAN_ONLY` env var (`true`/`false`). Like the recipient setting,
 a runtime toggle is held in memory and resets to the env/default on restart.
 
-This is a heuristic: a Polish listing written without any Polish-only letters
-won't be caught. It reliably filters the common case.
+> Note: a HUF-based seller whose listing title happens to be in another language
+> (e.g. a Romanian-titled item sold from Hungary) is kept — the seller is domestic.
+
+> **Inspecting the raw API.** Vinted's API is undocumented. Set
+> `VINTED_LOG_RAW_ITEMS=true` (or `vinted.log-raw-items` in `application.yml`), run
+> one poll, and the backend log prints a sample item's raw JSON. Turn it back off
+> afterwards — it's noisy.
 
 ## API endpoints (for reference)
 
